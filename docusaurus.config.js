@@ -11,7 +11,7 @@ import {themes as prismThemes} from 'prism-react-renderer';
 /** @type {import('@docusaurus/types').Config} */
 const config = {
   title: 'ض — لغة برمجة عربية',
-  tagline: 'دليل ومراجع لغة ض (Daad) بالعربية',
+  tagline: 'دليل ومراجع لغة ض  بالعربية',
   favicon: 'img/favicon.ico',
 
   // Future flags, see https://docusaurus.io/docs/api/docusaurus-config#future
@@ -36,8 +36,8 @@ const config = {
   // useful metadata like html lang. For example, if your site is Chinese, you
   // may want to replace "en" with "zh-Hans".
   i18n: {
-    defaultLocale: 'ar',
-    locales: ['ar'],
+    defaultLocale: 'en',
+    locales: ['en'],
   },
 
   presets: [
@@ -78,12 +78,13 @@ const config = {
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
       // Replace with your project's social card
+      direction: 'rtl',
       image: 'img/docusaurus-social-card.jpg',
       colorMode: {
         respectPrefersColorScheme: true,
       },
       navbar: {
-        title: 'موقع ض',
+        title: '',
         logo: {
           alt: 'My Site Logo',
           src: 'img/logo.svg',
