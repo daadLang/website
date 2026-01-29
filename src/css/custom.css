@@ -31,7 +31,7 @@
 
 /* Force RTL layout and right-aligned base text for Arabic docs */
 html, body {
-  direction: rtl;
+  direction: rtl !important; 
   text-align: right;
 }
 
