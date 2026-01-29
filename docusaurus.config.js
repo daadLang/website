@@ -10,8 +10,8 @@ import {themes as prismThemes} from 'prism-react-renderer';
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-  title: 'My Site',
-  tagline: 'Dinosaurs are cool',
+  title: 'ض — لغة برمجة عربية',
+  tagline: 'دليل ومراجع لغة ض (Daad) بالعربية',
   favicon: 'img/favicon.ico',
 
   // Future flags, see https://docusaurus.io/docs/api/docusaurus-config#future
@@ -36,8 +36,8 @@ const config = {
   // useful metadata like html lang. For example, if your site is Chinese, you
   // may want to replace "en" with "zh-Hans".
   i18n: {
-    defaultLocale: 'en',
-    locales: ['en'],
+    defaultLocale: 'ar',
+    locales: ['ar'],
   },
 
   presets: [
@@ -83,7 +83,7 @@ const config = {
         respectPrefersColorScheme: true,
       },
       navbar: {
-        title: 'My Site',
+        title: 'موقع ض',
         logo: {
           alt: 'My Site Logo',
           src: 'img/logo.svg',
@@ -93,12 +93,12 @@ const config = {
             type: 'docSidebar',
             sidebarId: 'tutorialSidebar',
             position: 'left',
-            label: 'Tutorial',
+            label: 'الدروس',
           },
-          {to: '/blog', label: 'Blog', position: 'left'},
+          {to: '/blog', label: 'المدونة', position: 'left'},
           {
-            href: 'https://github.com/facebook/docusaurus',
-            label: 'GitHub',
+            href: 'https://github.com/daadLang',
+            label: 'مشروع GitHub',
             position: 'right',
           },
         ],
@@ -107,16 +107,16 @@ const config = {
         style: 'dark',
         links: [
           {
-            title: 'Docs',
+            title: 'التوثيق',
             items: [
               {
-                label: 'Tutorial',
+                label: 'الدروس',
                 to: '/docs/intro',
               },
             ],
           },
           {
-            title: 'Community',
+            title: 'المجتمع',
             items: [
               {
                 label: 'Stack Overflow',
@@ -133,15 +133,15 @@ const config = {
             ],
           },
           {
-            title: 'More',
+            title: 'المزيد',
             items: [
               {
-                label: 'Blog',
+                label: 'المدونة',
                 to: '/blog',
               },
               {
                 label: 'GitHub',
-                href: 'https://github.com/facebook/docusaurus',
+                href: 'https://github.com/daadLang',
               },
             ],
           },
