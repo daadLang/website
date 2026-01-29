@@ -28,3 +28,15 @@
   --ifm-color-primary-lightest: #4fddbf;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
 }
+
+/* Force RTL layout and right-aligned base text for Arabic docs */
+html, body {
+  direction: rtl;
+  text-align: right;
+}
+
+/* Ensure code blocks preserve direction where needed */
+pre, code, .markdown, .theme-doc-markdown {
+  direction: rtl;
+  unicode-bidi: embed;
+}
