@@ -99,7 +99,7 @@ const config = {
           {to: '/blog', label: 'المدونة', position: 'left'},
           {
             href: 'https://github.com/daadLang',
-            label: 'مشروع GitHub',
+            label: 'GitHub',
             position: 'right',
           },
         ],
