@@ -10,7 +10,7 @@ import {themes as prismThemes} from 'prism-react-renderer';
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-  title: 'ض — لغة برمجة عربية',
+  title: 'لغة برمجة باللغة العربية',
   tagline: 'دليل ومراجع لغة ض  بالعربية',
   favicon: 'img/favicon.ico',
 
@@ -39,6 +39,8 @@ const config = {
     defaultLocale: 'en',
     locales: ['en'],
   },
+  // Client scripts
+  scripts: ['/js/swap-nav-logo.js'],
 
   presets: [
     [
@@ -80,7 +82,6 @@ const config = {
       // Replace with your project's social card
       direction: 'rtl',
       image: 'img/docusaurus-social-card.jpg',
-      direction: 'rtl',
       colorMode: {
         respectPrefersColorScheme: true,
       },
@@ -88,7 +89,7 @@ const config = {
         title: '',
         logo: {
           alt: 'My Site Logo',
-          src: 'img/logo.svg',
+          src: 'img/logo.png',
         },
         items: [
           {
@@ -100,8 +101,10 @@ const config = {
           {to: '/blog', label: 'المدونة', position: 'left'},
           {
             href: 'https://github.com/daadLang',
-            label: 'GitHub',
             position: 'right',
+            // Use an HTML item to show the GitHub mark instead of a text label
+            // add `navbar-github` class so we can target it in CSS
+            html: "<img class='navbar-github' src='/img/github.svg' alt='GitHub' style='width:28px;height:28px;vertical-align:middle;'/>",
           },
         ],
       },

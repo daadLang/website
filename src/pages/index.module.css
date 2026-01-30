@@ -21,3 +21,11 @@
   align-items: center;
   justify-content: center;
 }
+
+/* Logo used in the hero title */
+.heroLogo {
+  display: block;
+  margin: 0 auto;
+  width: 160px;
+  height: auto;
+}

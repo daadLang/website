@@ -40,3 +40,20 @@ pre, code, .markdown, .theme-doc-markdown {
   direction: rtl;
   unicode-bidi: embed;
 }
+
+
+.navbar__logo {
+  scale: 0.7;
+}
+
+/* GitHub navbar icon: transition + dark-theme inversion */
+.navbar-github {
+  display: inline-block;
+  transition: filter 160ms ease-in-out, opacity 160ms ease-in-out;
+}
+
+/* In dark theme, invert the monochrome SVG so it appears light on dark backgrounds */
+[data-theme='dark'] .navbar-github {
+  filter: invert(1) grayscale(1) contrast(1.1);
+}
+/* Hero logo handled by JS: one <img> swapped between /img/logo.svg and /img/logo-dark.svg */
