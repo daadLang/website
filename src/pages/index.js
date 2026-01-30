@@ -4,6 +4,8 @@ import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import Layout from '@theme/Layout';
 import Heading from '@theme/Heading';
 import CodeBlock from '@theme/CodeBlock';
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
 import styles from './index.module.css';
 
 /* =====================
@@ -32,7 +34,7 @@ function Hero() {
               </Link>
               <Link
                 className="button button--secondary button--lg"
-                to="/docs/tutorial/02-intro">
+                to="/docs/tutorial/intro">
                 دليل اللغة
               </Link>
             </div>
@@ -57,17 +59,46 @@ function CodeShowcase() {
       <div className={styles.container}>
         <div className={styles.codeInner}>
           <Heading as="h2" className={styles.sectionTitle}>مثال سريع</Heading>
-          <div className={styles.codeMockup}>
-            <CodeBlock language="daad">{`# مثال بلغة ض
-دالة حساب_المجموع(قائمة):
+        <div className={styles.codeMockup}>
+          <Tabs>
+            <TabItem value="basic" label="أساسيات">
+              <CodeBlock language="daad">{`# مثال أساسي
+دالة تحية():
+    اطبع("مرحباً")
+
+تحية()
+`}</CodeBlock>
+            </TabItem>
+
+            <TabItem value="loops" label="تكرار">
+              <CodeBlock language="daad">{`# مثال بسيط باستخدام حلقات
+دالة جمع_الزوجية(قائمة):
     مجموع = 0
     لكل عنصر في قائمة:
-        مجموع += عنصر
+        اذا عنصر % 2 == 0:
+            مجموع += عنصر
     ارجع مجموع
 
-اطبع(حساب_المجموع([1, 2, 3, 4]))
+اطبع(جمع_الزوجية([1,2,3,4,5,6]))
 `}</CodeBlock>
-          </div>
+            </TabItem>
+
+            <TabItem value="oop" label="كائنات">
+              <CodeBlock language="daad">{`# مثال برمجة كائنية
+صف شخص:
+    دالة __بناء__(هذا, الاسم, العمر):
+        هذا.اسم = الاسم
+        هذا.عمر = العمر
+
+    دالة ترحيب(هذاي):
+      اطبع("مرحبا، اسمي " + هذا.اسم + " وعمري " + str(هذا.عمر))
+
+احمد = شخص("أحمد", 30)
+احمد.ترحيب()
+`}</CodeBlock>
+            </TabItem>
+          </Tabs>
+        </div>
         </div>
       </div>
     </section>
