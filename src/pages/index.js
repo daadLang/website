@@ -1,66 +1,137 @@
-import clsx from 'clsx';
+import React from 'react';
 import Link from '@docusaurus/Link';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import Layout from '@theme/Layout';
-import HomepageFeatures from '@site/src/components/HomepageFeatures';
-
 import Heading from '@theme/Heading';
+import CodeBlock from '@theme/CodeBlock';
 import styles from './index.module.css';
-import React, {useEffect, useRef} from 'react';
 
-function HomepageHeader() {
-  const {siteConfig} = useDocusaurusContext();
-  const logoRef = useRef(null);
+/* =====================
+   Hero Section
+===================== */
+function Hero() {
+  const { siteConfig } = useDocusaurusContext();
 
-  useEffect(() => {
-    const logo = logoRef.current;
-    if (!logo) return undefined;
-
-    const updateLogo = () => {
-      const theme = document.documentElement.getAttribute('data-theme');
-      logo.src = theme === 'dark' ? '/img/logo-dark.svg' : '/img/logo.svg';
-    };
-
-    updateLogo();
-
-    const mo = new MutationObserver(() => updateLogo());
-    mo.observe(document.documentElement, { attributes: true });
-    return () => mo.disconnect();
-  }, []);
   return (
-    <header className={clsx('hero hero--primary', styles.heroBanner)}>
-      <div className="container">
-        <Heading as="h1" className="hero__title">
-          <img
-            ref={logoRef}
-            id="hero-logo"
-            src="/img/logo.svg"
-            alt={siteConfig.title}
-            className={clsx(styles.heroLogo, 'heroLogo')}
-          />
-        </Heading>
-        <p className="hero__subtitle">لغة برمجة باللغة العربية</p>
-        <div className={styles.buttons}>
-          <Link
-            className="button button--secondary button--lg"
-            to="/docs/home">
-            الدروس
-          </Link>
+    <header className={styles.hero}>
+      <div className={styles.container}>
+        <div className={styles.heroGrid}>
+          <div className={styles.heroText}>
+            <Heading as="h1" className={styles.title}>
+              {siteConfig.title}
+            </Heading>
+            <p className={styles.subtitle}>
+              لغة برمجة عربية حديثة، مستوحاة من بايثون، مصممة للوضوح والبساطة.
+            </p>
+
+            <div className={styles.actions}>
+              <Link
+                className="button button--primary button--lg"
+                to="/docs/home">
+                ابدأ الآن
+              </Link>
+              <Link
+                className="button button--secondary button--lg"
+                to="/docs/tutorial/02-intro">
+                دليل اللغة
+              </Link>
+            </div>
+          </div>
+
+          <div className={styles.heroLogo}>
+            <img src="/img/logo.svg" data-dark="/img/logo-dark.svg" alt={siteConfig.title} className={`logoSvg ${styles.logoImg}`} />
+          </div>
         </div>
       </div>
     </header>
   );
 }
 
+
+/* =====================
+   Code Showcase
+===================== */
+function CodeShowcase() {
+  return (
+    <section className={styles.codeShowcase}>
+      <div className={styles.container}>
+        <div className={styles.codeInner}>
+          <Heading as="h2" className={styles.sectionTitle}>مثال سريع</Heading>
+          <div className={styles.codeMockup}>
+            <CodeBlock language="daad">{`# مثال بلغة ض
+دالة حساب_المجموع(قائمة):
+    مجموع = 0
+    لكل عنصر في قائمة:
+        مجموع += عنصر
+    ارجع مجموع
+
+اطبع(حساب_المجموع([1, 2, 3, 4]))
+`}</CodeBlock>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+
+/* =====================
+   Features Section
+===================== */
+function Features() {
+  const features = [
+    {
+      title: 'قريبة من بايثون',
+      description: 'بنية مألوفة وفلسفة بسيطة مع كلمات مفتاحية عربية.'
+    },
+    {
+      title: 'مناسبة للتعلم',
+      description: 'مصممة للطلاب والمبتدئين في البرمجة.'
+    },
+    {
+      title: 'مفتوحة المصدر',
+      description: 'مشروع مجتمعي مفتوح وقابل للتوسعة.'
+    },
+    {
+      title: 'خفيفة وسريعة',
+      description: 'مفسر بسيط للتجارب والتعليم.'
+    }
+  ];
+
+  return (
+    <section className={styles.features}>
+      <div className={styles.container}>
+        <Heading as="h2" className={styles.sectionTitle}>
+          لماذا لغة ض؟
+        </Heading>
+
+        <div className={styles.featuresGrid}>
+          {features.map((f) => (
+            <div key={f.title} className={styles.featureCard}>
+              <h3>{f.title}</h3>
+              <p>{f.description}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* =====================
+   Homepage
+===================== */
 export default function Home() {
-  const {siteConfig} = useDocusaurusContext();
+  const { siteConfig } = useDocusaurusContext();
+
   return (
     <Layout
-      title={`Hello from ${siteConfig.title}`}
-      description="Description will go into a meta tag in <head />">
-      <HomepageHeader />
+      title={siteConfig.title}
+      description="لغة ض — لغة برمجة عربية حديثة">
       <main>
-        <HomepageFeatures />
+        <Hero />
+        <CodeShowcase />
+        <Features />
       </main>
     </Layout>
   );

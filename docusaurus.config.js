@@ -41,6 +41,10 @@ const config = {
   },
   // Client scripts
   scripts: ['/js/swap-nav-logo.js', '/js/prism-daad.js'],
+  // Client modules: bundle small client helpers (swap logos, prism extensions, etc.)
+  clientModules: [
+    require.resolve('./src/clientModules/swap-logo-theme.js'),
+  ],
 
   presets: [
     [
@@ -110,48 +114,8 @@ const config = {
       },
       footer: {
         style: 'dark',
-        links: [
-          {
-            title: 'التوثيق',
-            items: [
-              {
-                label: 'الدروس',
-                to: '/docs/intro',
-              },
-            ],
-          },
-          {
-            title: 'المجتمع',
-            items: [
-              {
-                label: 'Stack Overflow',
-                href: 'https://stackoverflow.com/questions/tagged/docusaurus',
-              },
-              {
-                label: 'Discord',
-                href: 'https://discordapp.com/invite/docusaurus',
-              },
-              {
-                label: 'X',
-                href: 'https://x.com/docusaurus',
-              },
-            ],
-          },
-          {
-            title: 'المزيد',
-            items: [
-              // {
-              //   label: 'المدونة',
-              //   to: '/blog',
-              // },
-              {
-                label: 'GitHub',
-                href: 'https://github.com/daadLang',
-              },
-            ],
-          },
-        ],
-        copyright: `Copyright © ${new Date().getFullYear()} My Project, Inc. Built with Docusaurus.`,
+        links: [],
+        copyright: `Copyright © ${new Date().getFullYear()} ض.`,
       },
       prism: {
         theme: prismThemes.nightOwl,

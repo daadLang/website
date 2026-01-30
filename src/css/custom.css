@@ -57,3 +57,65 @@ pre, code, .markdown, .theme-doc-markdown {
   filter: invert(1) grayscale(1) contrast(1.1);
 }
 /* Hero logo handled by JS: one <img> swapped between /img/logo.svg and /img/logo-dark.svg */
+
+/* Footer improvements: spacing, contrast, RTL layout, and responsive columns */
+.footer {
+  padding: 3rem 1.25rem;
+  background: var(--card-bg);
+  border-top: 1px solid var(--border-soft);
+  color: var(--text-main);
+}
+
+.footer a {
+  color: var(--ifm-color-primary);
+  text-decoration: none;
+}
+
+.footer a:hover,
+.footer a:focus {
+  color: var(--ifm-color-primary-dark);
+  text-decoration: underline;
+}
+
+.footer .footer__links {
+  display: flex;
+  gap: 2rem;
+  justify-content: space-between;
+  align-items: flex-start;
+  direction: rtl;
+  text-align: right;
+}
+
+.footer .footer__link-item {
+  margin: 0 0 0.5rem 0;
+}
+
+.footer .footer__link-title {
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+.footer .footer__bottom-bar {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-soft);
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+@media (max-width: 900px) {
+  .footer .footer__links {
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+  .footer .footer__bottom-bar {
+    flex-direction: column;
+    text-align: center;
+    gap: 0.5rem;
+  }
+}

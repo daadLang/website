@@ -1,31 +1,172 @@
-/**
- * CSS files with the .module.css suffix will be treated as CSS modules
- * and scoped locally.
- */
+:root {
+  --bg-soft: #f7f8fa;
+  --card-bg: #ffffff;
+  --text-main: #1c1e21;
+  --text-muted: #6b7280;
+  --accent: #2563eb;
+  --border-soft: rgba(0, 0, 0, 0.06);
+}
 
-.heroBanner {
-  padding: 4rem 0;
-  text-align: center;
-  position: relative;
+[data-theme='dark'] {
+  --bg-soft: #0f1115;
+  --card-bg: #15171c;
+  --text-main: #e5e7eb;
+  --text-muted: #9ca3af;
+  --border-soft: rgba(255, 255, 255, 0.08);
+}
+
+/* Layout */
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 1.25rem;
+}
+
+/* =====================
+   Hero
+===================== */
+.hero {
+  padding: 5rem 0 4rem;
+  background: linear-gradient(180deg, rgba(52,182,226,0.06), transparent 60%);
+}
+
+.heroGrid {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 3rem;
+  align-items: center;
+}
+
+.heroText {
+  text-align: right;
+}
+
+.title {
+  font-size: 3.2rem;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+  color: var(--text-main);
+}
+
+.subtitle {
+  font-size: 1.15rem;
+  line-height: 1.7;
+  color: var(--text-muted);
+  max-width: 520px;
+  margin-bottom: 1.75rem;
+}
+
+.actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.heroCode {
+  background: var(--card-bg);
+  border-radius: 14px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
   overflow: hidden;
 }
-
-@media screen and (max-width: 996px) {
-  .heroBanner {
-    padding: 2rem;
-  }
-}
-
-.buttons {
+.heroLogo {
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-/* Logo used in the hero title */
-.heroLogo {
-  display: block;
-  margin: 0 auto;
-  width: 160px;
+.logoImg {
+  width: 100%;
+  max-width: 360px;
   height: auto;
+  display: block;
+  transition: transform 180ms ease, filter 180ms ease;
+
+}
+
+/* =====================
+   Features
+===================== */
+.features {
+  padding: 4.5rem 0;
+}
+
+/* =====================
+   Code Showcase
+===================== */
+.codeShowcase {
+  padding: 3.5rem 0;
+  background: linear-gradient(180deg, rgba(33,150,243,0.04), rgba(52,182,226,0.02));
+}
+
+.codeInner { text-align: right; }
+
+.codeMockup {
+  background: var(--card-bg);
+  border-radius: 12px;
+  padding: 1rem;
+  box-shadow: 0 10px 30px rgba(2,6,23,0.08);
+  margin-top: 1rem;
+  overflow: auto;
+}
+
+.sectionTitle {
+  text-align: center;
+  font-size: 2rem;
+  margin-bottom: 2.5rem;
+}
+
+.featuresGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+}
+
+.featureCard {
+  background: var(--card-bg);
+  border: 1px solid var(--border-soft);
+  border-radius: 14px;
+  padding: 1.5rem;
+  text-align: right;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.featureCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
+}
+
+.featureCard h3 {
+  margin-bottom: 0.4rem;
+  font-size: 1.15rem;
+}
+
+.featureCard p {
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+/* =====================
+   Responsive
+===================== */
+@media (max-width: 900px) {
+  .heroGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .heroText {
+    text-align: center;
+  }
+
+  .subtitle {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .actions {
+    justify-content: center;
+  }
+
+  .featuresGrid {
+    grid-template-columns: 1fr;
+  }
 }
