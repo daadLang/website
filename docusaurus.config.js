@@ -40,7 +40,7 @@ const config = {
     locales: ['en'],
   },
   // Client scripts
-  scripts: ['/js/swap-nav-logo.js'],
+  scripts: ['/js/swap-nav-logo.js', '/js/prism-daad.js'],
 
   presets: [
     [
@@ -154,8 +154,9 @@ const config = {
         copyright: `Copyright © ${new Date().getFullYear()} My Project, Inc. Built with Docusaurus.`,
       },
       prism: {
-        theme: prismThemes.github,
-        darkTheme: prismThemes.dracula,
+        theme: prismThemes.nightOwl,
+        darkTheme: prismThemes.nightOwl,
+        additionalLanguages: ['daad'], // Add your language here
       },
     }),
 };
