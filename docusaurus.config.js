@@ -98,7 +98,7 @@ const config = {
             position: 'left',
             label: 'الدروس',
           },
-          {to: '/blog', label: 'المدونة', position: 'left'},
+          // {to: '/blog', label: 'المدونة', position: 'left'},
           {
             href: 'https://github.com/daadLang',
             position: 'right',
@@ -140,10 +140,10 @@ const config = {
           {
             title: 'المزيد',
             items: [
-              {
-                label: 'المدونة',
-                to: '/blog',
-              },
+              // {
+              //   label: 'المدونة',
+              //   to: '/blog',
+              // },
               {
                 label: 'GitHub',
                 href: 'https://github.com/daadLang',
