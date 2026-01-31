@@ -20,16 +20,11 @@ const config = {
   },
 
   // Set the production url of your site here
-  url: 'https://your-docusaurus-site.example.com',
-  // Set the /<baseUrl>/ pathname under which your site is served
-  // For GitHub pages deployment, it is often '/<projectName>/'
-  baseUrl: '/',
-
-  // GitHub pages deployment config.
-  // If you aren't using GitHub pages, you don't need these.
-  organizationName: 'facebook', // Usually your GitHub org/user name.
-  projectName: 'docusaurus', // Usually your repo name.
-
+  url: 'https://daadLang.github.io',
+baseUrl: '/website/',
+organizationName: 'daadLang',
+projectName: 'website',
+deploymentBranch: 'gh-pages',
   onBrokenLinks: 'throw',
 
   // Even if you don't use internationalization, you can use this field to set
@@ -108,19 +103,19 @@ const config = {
             position: 'right',
             // Use an HTML item to show the GitHub mark instead of a text label
             // add `navbar-github` class so we can target it in CSS
-            html: "<img class='navbar-github' src='/img/github.svg' alt='GitHub' style='width:28px;height:28px;vertical-align:middle;'/>",
+            html: "<img class='navbar-github' src='/img/github.svg' alt='جيت هب' style='width:28px;height:28px;vertical-align:middle;'/>",
+            },
+          ],
           },
-        ],
-      },
-      footer: {
-        style: 'dark',
-        links: [],
-        copyright: `Copyright © ${new Date().getFullYear()} ض.`,
-      },
-      prism: {
-        theme: prismThemes.nightOwl,
-        darkTheme: prismThemes.nightOwl,
-        additionalLanguages: ['daad'], // Add your language here
+          footer: {
+          style: 'dark',
+          links: [],
+          copyright: `حقوق النشر © ${new Date().getFullYear()} ض.`,
+          },
+          prism: {
+          theme: prismThemes.nightOwl,
+          darkTheme: prismThemes.nightOwl,
+          additionalLanguages: ['daad'], // أضف لغتك هنا
       },
     }),
 };
