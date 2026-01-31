@@ -1,6 +1,7 @@
 import React from 'react';
 import Link from '@docusaurus/Link';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
+import useBaseUrl from '@docusaurus/useBaseUrl';
 import Layout from '@theme/Layout';
 import Heading from '@theme/Heading';
 import CodeBlock from '@theme/CodeBlock';
@@ -13,6 +14,10 @@ import styles from './index.module.css';
 ===================== */
 function Hero() {
   const { siteConfig } = useDocusaurusContext();
+  const docsHome = useBaseUrl('/docs/home');
+  const tutorialUrl = useBaseUrl('/docs/tutorial/intro');
+  const logoSrc = useBaseUrl('/img/logo.svg');
+  const logoDark = useBaseUrl('/img/logo-dark.svg');
 
   return (
     <header className={styles.hero}>
@@ -28,20 +33,20 @@ function Hero() {
 
             <div className={styles.actions}>
               <Link
-                className="button button--primary button--lg"
-                to="/docs/home">
-                ابدأ الآن
-              </Link>
-              <Link
-                className="button button--secondary button--lg"
-                to="/docs/tutorial/intro">
-                دليل اللغة
-              </Link>
+                  className="button button--primary button--lg"
+                  to={docsHome}>
+                  ابدأ الآن
+                </Link>
+                <Link
+                  className="button button--secondary button--lg"
+                  to={tutorialUrl}>
+                  دليل اللغة
+                </Link>
             </div>
           </div>
 
           <div className={styles.heroLogo}>
-            <img src="/img/logo.svg" data-dark="/img/logo-dark.svg" alt={siteConfig.title} className={`logoSvg ${styles.logoImg}`} />
+            <img src={logoSrc} data-dark={logoDark} alt={siteConfig.title} className={`logoSvg ${styles.logoImg}`} />
           </div>
         </div>
       </div>

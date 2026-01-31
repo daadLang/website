@@ -6,13 +6,17 @@
 
 import {themes as prismThemes} from 'prism-react-renderer';
 
+// Base URL for assets and client scripts (keeps paths correct when site is served
+// from a subpath). Update this if you change `baseUrl` below.
+const BASE_URL = '/website/';
+
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
   title: 'لغة برمجة باللغة العربية',
   tagline: 'دليل ومراجع لغة ض  بالعربية',
-  favicon: 'img/favicon.ico',
+  favicon: `${BASE_URL}img/favicon.ico`,
 
   // Future flags, see https://docusaurus.io/docs/api/docusaurus-config#future
   future: {
@@ -21,7 +25,7 @@ const config = {
 
   // Set the production url of your site here
   url: 'https://daadLang.github.io',
-baseUrl: '/website/',
+  baseUrl: BASE_URL,
 organizationName: 'daadLang',
 projectName: 'website',
 deploymentBranch: 'gh-pages',
@@ -35,7 +39,10 @@ deploymentBranch: 'gh-pages',
     locales: ['en'],
   },
   // Client scripts
-  scripts: ['/js/swap-nav-logo.js', '/js/prism-daad.js'],
+  scripts: [
+    `${BASE_URL}js/swap-nav-logo.js`,
+    `${BASE_URL}js/prism-daad.js`,
+  ],
   // Client modules: bundle small client helpers (swap logos, prism extensions, etc.)
   clientModules: [
     require.resolve('./src/clientModules/swap-logo-theme.js'),
@@ -80,7 +87,7 @@ deploymentBranch: 'gh-pages',
     ({
       // Replace with your project's social card
       direction: 'rtl',
-      image: 'img/docusaurus-social-card.jpg',
+      image: `${BASE_URL}img/docusaurus-social-card.jpg`,
       colorMode: {
         respectPrefersColorScheme: true,
       },
@@ -88,7 +95,7 @@ deploymentBranch: 'gh-pages',
         title: '',
         logo: {
           alt: 'My Site Logo',
-          src: 'img/logo.png',
+          src: `${BASE_URL}img/logo.png`,
         },
         items: [
           {
@@ -103,7 +110,7 @@ deploymentBranch: 'gh-pages',
             position: 'right',
             // Use an HTML item to show the GitHub mark instead of a text label
             // add `navbar-github` class so we can target it in CSS
-            html: "<img class='navbar-github' src='/img/github.svg' alt='جيت هب' style='width:28px;height:28px;vertical-align:middle;'/>",
+            html: `<img class='navbar-github' src='${BASE_URL}img/github.svg' alt='جيت هب' style='width:28px;height:28px;vertical-align:middle;'/>`,
             },
           ],
           },
