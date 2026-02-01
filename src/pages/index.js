@@ -16,6 +16,7 @@ function Hero() {
   const { siteConfig } = useDocusaurusContext();
   const docsHome = useBaseUrl('/docs/home');
   const tutorialUrl = useBaseUrl('/docs/tutorial/intro');
+  const downloadUrl = useBaseUrl('/simple_download');
   const logoSrc = useBaseUrl('/img/logo.svg');
   const logoDark = useBaseUrl('/img/logo-dark.svg');
 
@@ -39,8 +40,8 @@ function Hero() {
                 </Link>
                 <Link
                   className="button button--secondary button--lg"
-                  to={tutorialUrl}>
-                  دليل اللغة
+                  to={downloadUrl}>
+                  تنزيل
                 </Link>
             </div>
           </div>
