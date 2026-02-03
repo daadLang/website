@@ -1,9 +1,33 @@
 // Swap the navbar logo between light and dark variants depending on site theme.
 (function () {
   try {
-    const LIGHT = '/img/logo.png';
-      const DARK_PNG = '/img/logo-dark.png';
-      const DARK_SVG = '/img/logo-dark.svg';
+    // Derive base URL from this script's location so paths work when site
+    // is served from a subpath (e.g. `/website/`). We expect this script to
+    // be loaded from `<base>/js/swap-nav-logo.js`.
+    function getScriptBase() {
+      try {
+        var s = document.currentScript;
+        if (!s) {
+          // fallback: find script element by filename
+          var scripts = document.getElementsByTagName('script');
+          for (var i = 0; i < scripts.length; i++) {
+            if (scripts[i].src && /swap-nav-logo\.js(?:[?#].*)?$/.test(scripts[i].src)) { s = scripts[i]; break; }
+          }
+        }
+        if (s && s.src) {
+          return s.src.replace(/\/js\/[^\/?#]+(?:[?#].*)?$/, '/');
+        }
+      } catch (e) {
+        // ignore
+      }
+      // final fallback: assume root
+      return '/';
+    }
+
+    var BASE = getScriptBase();
+    const LIGHT = BASE + 'img/logo.png';
+    const DARK_PNG = BASE + 'img/logo-dark.png';
+    const DARK_SVG = BASE + 'img/logo-dark.svg';
 
     function getLogoEl() {
       return (
