@@ -29,7 +29,7 @@ function Hero() {
               {siteConfig.title}
             </Heading>
             <p className={styles.subtitle}>
-              لغة برمجة عربية حديثة، مستوحاة من بايثون، مصممة للوضوح والبساطة.
+              ض هي لغة برمجة باللغة العربية حديثة مصممة لتكون سهلة التعلّم وقوية في نفس الوقت
             </p>
 
             <div className={styles.actions}>
