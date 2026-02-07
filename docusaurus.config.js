@@ -104,6 +104,11 @@ deploymentBranch: 'gh-pages',
             position: 'left',
             label: 'الدروس',
           },
+          {
+            to: '/download',
+            position: 'left',
+            label: 'تنزيل',
+          },
           // {to: '/blog', label: 'المدونة', position: 'left'},
           {
             href: 'https://github.com/daadLang',

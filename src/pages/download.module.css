@@ -1,0 +1,284 @@
+.page {
+  background: linear-gradient(180deg, rgba(52, 182, 226, 0.06), transparent 28%);
+}
+
+.heroSection,
+.stepsSection,
+.platformSection {
+  padding: 2.2rem 0;
+}
+
+.heroCard,
+.stepCard,
+.osCard {
+  background: var(--card-bg);
+  border: 1px solid var(--border-soft);
+  border-radius: 14px;
+  box-shadow: 0 10px 30px rgba(2, 6, 23, 0.06);
+}
+
+.heroCard {
+  padding: clamp(1rem, 2.4vw, 1.8rem);
+  overflow-wrap: anywhere;
+}
+
+.heroCard h1 {
+  margin: 0;
+  font-size: clamp(1.6rem, 4vw, 2.35rem);
+  line-height: 1.2;
+  color: var(--text-main);
+}
+
+.subhead {
+  margin: 0.7rem 0 0;
+  color: var(--text-muted);
+  font-size: 1.02rem;
+}
+
+.heroButtonRow {
+  margin-top: 1.1rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+}
+
+.heroButtonRow :global(.button) {
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.heroComingSoon {
+  display: inline-block;
+  border: 1px dashed var(--border-soft);
+  background: rgba(148, 163, 184, 0.12);
+  color: var(--text-muted);
+  border-radius: 10px;
+  padding: 0.8rem 1rem;
+  font-weight: 600;
+}
+
+.packageMeta {
+  margin: 0.55rem 0 0;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  letter-spacing: 0.01em;
+}
+
+.releaseMeta {
+  margin: 0.55rem 0 0;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  overflow-wrap: anywhere;
+}
+
+.releaseError {
+  margin: 0.55rem 0 0;
+  color: #b91c1c;
+  font-size: 0.9rem;
+}
+
+.sectionTitle {
+  margin: 0;
+  color: var(--text-main);
+  font-size: clamp(1.35rem, 3vw, 1.9rem);
+}
+
+.stepsGrid {
+  margin-top: 1rem;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.9rem;
+}
+
+.stepCard {
+  padding: 1rem;
+  min-width: 0;
+}
+
+.stepNum {
+  display: inline-flex;
+  width: 1.95rem;
+  height: 1.95rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: var(--ifm-color-primary);
+  color: #fff;
+  font-weight: 700;
+  margin-bottom: 0.55rem;
+}
+
+.stepCard h3 {
+  margin: 0;
+  color: var(--text-main);
+  font-size: 1.05rem;
+  line-height: 1.45;
+}
+
+.stepCard p {
+  margin: 0.45rem 0 0;
+  color: var(--text-muted);
+  line-height: 1.7;
+}
+
+.supportLinks {
+  margin-top: 1rem;
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.supportLinks a {
+  color: var(--ifm-color-primary);
+  text-decoration: none;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.supportLinks a:hover,
+.supportLinks a:focus {
+  text-decoration: underline;
+}
+
+.osGrid {
+  margin-top: 1rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.9rem;
+}
+
+.platformGroup {
+  margin-top: 1rem;
+}
+
+.groupTitle {
+  margin: 0;
+  color: var(--text-main);
+  font-size: 1.05rem;
+}
+
+.osCard {
+  padding: 1rem;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.osCardActive {
+  border-color: var(--ifm-color-primary);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--ifm-color-primary) 20%, transparent);
+}
+
+.osHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+}
+
+.osHeader h3 {
+  margin: 0;
+  color: var(--text-main);
+  font-size: 1.05rem;
+}
+
+.badge {
+  border-radius: 999px;
+  background: rgba(46, 133, 85, 0.16);
+  color: var(--ifm-color-primary-darkest);
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.2rem 0.55rem;
+}
+
+.cardDescription {
+  margin: 0.6rem 0;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+.cardButtons {
+  margin-top: auto;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.cardButtons :global(.button) {
+  width: 100%;
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  text-align: center;
+}
+
+.linuxPicker {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.linuxPicker label {
+  color: var(--text-main);
+  font-weight: 600;
+}
+
+.linuxPicker select {
+  max-width: 100%;
+  min-width: 0;
+  width: 100%;
+  border: 1px solid var(--border-soft);
+  border-radius: 8px;
+  background: var(--card-bg);
+  color: var(--text-main);
+  padding: 0.5rem;
+}
+
+.comingSoon,
+.cliUnavailable {
+  border: 1px dashed var(--border-soft);
+  background: rgba(148, 163, 184, 0.12);
+  color: var(--text-muted);
+  border-radius: 10px;
+  padding: 0.8rem;
+  text-align: center;
+  font-weight: 600;
+}
+
+.singleComingSoonButton {
+  width: 100%;
+  text-align: center;
+  pointer-events: none;
+  opacity: 0.92;
+  background: #334155;
+  border-color: #334155;
+  color: #f8fafc;
+}
+
+.singleComingSoonButton:hover,
+.singleComingSoonButton:focus {
+  background: #334155;
+  border-color: #334155;
+  color: #f8fafc;
+}
+
+@media (max-width: 960px) {
+  .stepsGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 700px) {
+  .heroSection,
+  .stepsSection,
+  .platformSection {
+    padding: 1.3rem 0;
+  }
+
+  .heroButtonRow :global(.button) {
+    width: 100%;
+  }
+
+  .supportLinks {
+    gap: 0.7rem;
+  }
+}
