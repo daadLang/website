@@ -1,244 +1,588 @@
-import React, {useMemo, useState, useEffect} from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 import Layout from '@theme/Layout';
-import useBaseUrl from '@docusaurus/useBaseUrl';
 import Link from '@docusaurus/Link';
+import styles from './download.module.css';
 
-// A modern download page: latest release summary, release selector, platform cards
+const GITHUB_API = {
+  language: 'https://api.github.com/repos/daadLang/daad/releases/latest',
+  editor: 'https://api.github.com/repos/daadLang/d-editor/releases/latest',
+};
 
-const EXAMPLE_RELEASES = [
-  {
-    id: 1,
-    tag_name: 'v0.2.0',
-    name: 'إصدار 0.2.0',
-    published_at: '2026-01-15',
-    assets: [
-      { name: 'daad-0.2.0-windows-installer.exe', browser_download_url: 'https://example.com/downloads/daad-0.2.0-windows-installer.exe' },
-      { name: 'daad-0.2.0-mac.dmg', browser_download_url: 'https://example.com/downloads/daad-0.2.0-mac.dmg' },
-      { name: 'daad-0.2.0-linux.AppImage', browser_download_url: 'https://example.com/downloads/daad-0.2.0-linux.AppImage' },
-      { name: 'daad-0.2.0-lang.zip', browser_download_url: 'https://example.com/downloads/daad-0.2.0-lang.zip' },
-      { name: 'daad-0.2.0-ide.zip', browser_download_url: 'https://example.com/downloads/daad-0.2.0-ide.zip' },
-    ],
-  },
-  {
-    id: 2,
-    tag_name: 'v0.1.0',
-    name: 'الإصدار التجريبي 0.1.0',
-    published_at: '2025-12-01',
-    assets: [
-      { name: 'daad-0.1.0.zip', browser_download_url: 'https://example.com/downloads/daad-0.1.0.zip' },
-    ],
-  },
+const RELEASE_LINKS = {
+  languageAll: 'https://github.com/daadLang/daad/releases',
+  editorAll: 'https://github.com/daadLang/d-editor/releases',
+};
+
+const OS_LIST = [
+  {key: 'windows', label: 'ويندوز'},
+  {key: 'macos', label: 'ماك'},
+  {key: 'linux', label: 'لينكس'},
+  {key: 'android', label: 'أندرويد'},
+  {key: 'ios', label: 'iOS'},
 ];
 
-function detectPlatform() {
-  if (typeof navigator === 'undefined') return 'linux';
-  const p = navigator.platform.toLowerCase();
-  if (p.includes('win')) return 'windows';
-  if (p.includes('mac') || p.includes('darwin')) return 'mac';
-  if (p.includes('linux')) return 'linux';
-  return 'linux';
+const DESKTOP_OS_KEYS = new Set(['windows', 'macos', 'linux']);
+const MOBILE_OS_KEYS = new Set(['android', 'ios']);
+
+function prioritizeDetectedOS(osList, detectedKey) {
+  if (!detectedKey || detectedKey === 'unknown') return osList;
+  const detected = osList.find((os) => os.key === detectedKey);
+  if (!detected) return osList;
+  return [detected, ...osList.filter((os) => os.key !== detectedKey)];
 }
 
-function pickAsset(release, pattern) {
-  if (!release || !release.assets) return null;
-  const found = release.assets.find(a => a.name.toLowerCase().includes(pattern));
-  return found || null;
+const OS_TECH_LABEL = {
+  windows: 'Windows',
+  macos: 'macOS',
+  linux: 'Linux',
+  android: 'Android',
+  ios: 'iOS',
+  unknown: 'Unknown',
+};
+
+function isMobileOS(os) {
+  return os === 'android' || os === 'ios';
 }
 
-function PlatformCard({platform, release, recommended}) {
-  const primary = pickAsset(release, platform) || pickAsset(release, 'installer') || release?.assets?.[0];
-  const lang = pickAsset(release, 'lang') || pickAsset(release, '.zip') || null;
-  const ide = pickAsset(release, 'ide') || null;
+function normalizePlatform(raw) {
+  const value = String(raw || '').toLowerCase();
+  if (value.includes('win')) return 'windows';
+  if (value.includes('mac') || value.includes('darwin')) return 'macos';
+  if (value.includes('android')) return 'android';
+  if (value.includes('iphone') || value.includes('ipad') || value.includes('ipod') || value.includes('ios')) return 'ios';
+  if (value.includes('linux') || value.includes('x11')) return 'linux';
+  return 'unknown';
+}
+
+function normalizeArch(raw) {
+  const value = String(raw || '').toLowerCase();
+  if (value.includes('arm64') || value.includes('aarch64')) return 'arm64';
+  if (value.includes('arm')) return 'arm';
+  if (value.includes('x64') || value.includes('x86_64') || value.includes('amd64') || value.includes('win64')) return 'x64';
+  if (value.includes('x86') || value.includes('i386') || value.includes('i686') || value.includes('win32')) return 'x86';
+  return 'unknown';
+}
+
+function detectClient() {
+  if (typeof navigator === 'undefined') {
+    return {os: 'unknown', arch: 'unknown'};
+  }
+
+  const osSource = navigator.userAgentData?.platform || `${navigator.platform} ${navigator.userAgent}`;
+  const archSource = navigator.userAgentData?.architecture || `${navigator.platform} ${navigator.userAgent}`;
+
+  return {
+    os: normalizePlatform(osSource),
+    arch: normalizeArch(archSource),
+  };
+}
+
+function stageLabel(tag) {
+  const t = String(tag || '').toLowerCase();
+  if (t.includes('beta')) return 'Beta';
+  if (t.includes('alpha')) return 'Alpha';
+  if (t.includes('rc')) return 'RC';
+  return 'Stable';
+}
+
+function archLabel(value) {
+  if (value === 'x64') return 'x64';
+  if (value === 'x86') return 'x86';
+  if (value === 'arm64') return 'ARM64';
+  if (value === 'arm') return 'ARM';
+  return 'Universal';
+}
+
+function detectArchFromName(name) {
+  const n = String(name || '').toLowerCase();
+  if (/(x64|x86_64|amd64)/.test(n)) return 'x64';
+  if (/(x86|i386|i686)/.test(n)) return 'x86';
+  if (/(arm64|aarch64)/.test(n)) return 'arm64';
+  if (/\barm\b/.test(n)) return 'arm';
+  return 'unknown';
+}
+
+function fileTypeLabel(name) {
+  const n = name.toLowerCase();
+  if (n.endsWith('.appimage')) return 'AppImage';
+  if (n.endsWith('.apk')) return 'APK (Alpine)';
+  if (n.endsWith('.deb')) return 'DEB';
+  if (n.endsWith('.rpm')) return 'RPM';
+  if (n.endsWith('.tar.gz')) return 'TAR.GZ';
+  if (n.endsWith('.tar.xz')) return 'TAR.XZ';
+  if (n.endsWith('.exe')) return 'EXE';
+  if (n.endsWith('.msi')) return 'MSI';
+  if (n.endsWith('.dmg')) return 'DMG';
+  if (n.endsWith('.pkg')) return 'PKG';
+  if (n.endsWith('.ipa')) return 'IPA';
+  if (n.endsWith('.zip')) return 'ZIP';
+  return 'File';
+}
+
+function hasAny(text, patterns) {
+  return patterns.some((p) => text.includes(p));
+}
+
+function detectAssetPlatform(name) {
+  const n = name.toLowerCase();
+  if (hasAny(n, ['windows_', 'windows-', '_windows', '-windows', 'win-'])) return 'windows';
+  if (hasAny(n, ['darwin_', 'darwin-', '_darwin', '-darwin', 'mac', 'osx'])) return 'macos';
+  if (hasAny(n, ['linux_', 'linux-', '_linux', '-linux'])) return 'linux';
+  if (hasAny(n, ['android', 'aab', '.apk']) && !hasAny(n, ['linux_', 'linux-'])) return 'android';
+  if (hasAny(n, ['ios', 'iphone', 'ipad', '.ipa'])) return 'ios';
+  return 'unknown';
+}
+
+function isCompatibleEditorAsset(assetName, os) {
+  const n = assetName.toLowerCase();
+  const platform = detectAssetPlatform(assetName);
+
+  if (/sha256|checksums?|\.sig$|\.txt$/.test(n)) return false;
+
+  if (os === 'windows') return platform === 'windows' && (n.endsWith('.exe') || n.endsWith('.msi'));
+
+  if (os === 'macos') {
+    return platform === 'macos' && (n.endsWith('.dmg') || n.endsWith('.pkg') || n.endsWith('.zip') || n.endsWith('.tar.gz'));
+  }
+
+  if (os === 'linux') {
+    return platform === 'linux' && (n.endsWith('.appimage') || n.endsWith('.deb') || n.endsWith('.rpm') || n.endsWith('.tar.gz') || n.endsWith('.tar.xz'));
+  }
+
+  if (os === 'android') return platform === 'android' && (n.endsWith('.apk') || n.endsWith('.aab'));
+
+  if (os === 'ios') return platform === 'ios' && n.endsWith('.ipa');
+
+  return false;
+}
+
+function isCompatibleCliAsset(name, os) {
+  const n = name.toLowerCase();
+  if (/sha256|checksums?|\.sig$|\.txt$/.test(n)) return false;
+  const platform = detectAssetPlatform(name);
+
+  if (os === 'windows') return platform === 'windows' && n.endsWith('.zip');
+  if (os === 'macos') return platform === 'macos' && (n.endsWith('.tar.gz') || n.endsWith('.zip') || n.endsWith('.tar.xz'));
+  if (os === 'linux') return platform === 'linux' && (n.endsWith('.apk') || n.endsWith('.deb') || n.endsWith('.rpm') || n.endsWith('.tar.gz') || n.endsWith('.tar.xz'));
+  if (os === 'android') return platform === 'android' && (n.endsWith('.apk') || n.endsWith('.aab'));
+  if (os === 'ios') return platform === 'ios' && n.endsWith('.ipa');
+
+  return false;
+}
+
+function archScore(name, arch) {
+  const n = name.toLowerCase();
+  if (arch === 'x64' && /(x64|x86_64|amd64)/.test(n)) return 3;
+  if (arch === 'x86' && /(x86|i386|i686)/.test(n)) return 3;
+  if (arch === 'arm64' && /(arm64|aarch64)/.test(n)) return 3;
+  if (arch === 'arm' && /\barm\b/.test(n)) return 3;
+  return 0;
+}
+
+function typePriority(name, os) {
+  const n = name.toLowerCase();
+
+  if (os === 'windows') {
+    if (n.endsWith('.exe')) return 12;
+    if (n.endsWith('.msi')) return 10;
+  }
+
+  if (os === 'macos') {
+    if (n.endsWith('.dmg')) return 12;
+    if (n.endsWith('.pkg')) return 10;
+  }
+
+  if (os === 'linux') {
+    if (n.endsWith('.appimage')) return 12;
+    if (n.endsWith('.deb')) return 10;
+    if (n.endsWith('.rpm')) return 9;
+    if (n.endsWith('.apk')) return 9;
+    if (n.endsWith('.tar.gz')) return 8;
+    if (n.endsWith('.tar.xz')) return 7;
+  }
+
+  if (os === 'android' && n.endsWith('.apk')) return 12;
+  if (os === 'ios' && n.endsWith('.ipa')) return 12;
+
+  return 1;
+}
+
+function collectEditorAssets(release, os, arch) {
+  if (!release?.assets?.length) return [];
+
+  return release.assets
+    .filter((asset) => isCompatibleEditorAsset(asset.name, os))
+    .map((asset) => {
+      const detectedArch = detectArchFromName(asset.name);
+      return {
+        name: asset.name,
+        url: asset.browser_download_url,
+        type: fileTypeLabel(asset.name),
+        arch: detectedArch !== 'unknown' ? detectedArch : arch,
+        score: typePriority(asset.name, os) + archScore(asset.name, arch),
+      };
+    })
+    .sort((a, b) => b.score - a.score);
+}
+
+function collectCliAssets(release, os, arch) {
+  if (!release?.assets?.length) return [];
+
+  return release.assets
+    .filter((asset) => isCompatibleCliAsset(asset.name, os))
+    .map((asset) => {
+      return {
+        name: asset.name,
+        url: asset.browser_download_url,
+        type: fileTypeLabel(asset.name),
+        arch: detectArchFromName(asset.name),
+        score: typePriority(asset.name, os) + archScore(asset.name, arch),
+      };
+    })
+    .sort((a, b) => b.score - a.score);
+}
+
+async function fetchLatestRelease(url) {
+  const res = await fetch(url, {
+    headers: {
+      Accept: 'application/vnd.github+json',
+    },
+  });
+
+  if (!res.ok) {
+    throw new Error(`GitHub API error: ${res.status}`);
+  }
+
+  const data = await res.json();
+  return {
+    html_url: data.html_url,
+    tag_name: data.tag_name,
+    assets: Array.isArray(data.assets) ? data.assets : [],
+  };
+}
+
+function buildPlan(os, arch, releases) {
+  const target = os;
+
+  if (target === 'unknown') {
+    return {
+      os: 'unknown',
+      osTechLabel: OS_TECH_LABEL.unknown,
+      version: releases.editor?.tag_name || releases.language?.tag_name || null,
+      stage: 'Stable',
+      editorOptions: [],
+      cliOptions: [],
+      editorPrimary: null,
+      cliPrimary: null,
+      hasEditorInstall: false,
+      hasCli: false,
+      packageMeta: null,
+      editorTag: releases.editor?.tag_name || null,
+      languageTag: releases.language?.tag_name || null,
+      loading: releases.loading,
+      error: releases.error,
+    };
+  }
+
+  const editorSource = isMobileOS(target) ? releases.language : releases.editor;
+
+  const editorOptions = collectEditorAssets(editorSource, target, arch);
+  const cliOptions = collectCliAssets(releases.language, target, arch);
+
+  const editorPrimary = editorOptions[0] || null;
+  const cliPrimary = cliOptions[0] || null;
+
+  const version = editorSource?.tag_name || releases.editor?.tag_name || releases.language?.tag_name || null;
+  const stage = stageLabel(version);
+
+  return {
+    os: target,
+    osTechLabel: OS_TECH_LABEL[target] || OS_TECH_LABEL.unknown,
+    version,
+    stage,
+    editorOptions,
+    cliOptions,
+    editorPrimary,
+    cliPrimary,
+    hasEditorInstall: editorOptions.length > 0,
+    hasCli: cliOptions.length > 0,
+    packageMeta: editorPrimary ? `${editorPrimary.type} • ${archLabel(editorPrimary.arch)} • ${stage}` : null,
+    editorTag: releases.editor?.tag_name || null,
+    languageTag: releases.language?.tag_name || null,
+    loading: releases.loading,
+    error: releases.error,
+  };
+}
+
+function LinuxPackagePicker({options, label, buttonLabel, idPrefix, buttonVariant = 'primary'}) {
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const selected = options[selectedIndex] || null;
+
+  useEffect(() => {
+    setSelectedIndex(0);
+  }, [options]);
+
+  const selectId = `${idPrefix}-package`;
+  const buttonClass = buttonVariant === 'secondary' ? 'button button--secondary button--md' : 'button button--primary button--md';
 
   return (
-    <div style={{border: recommended ? '2px solid var(--ifm-color-primary)' : '1px solid var(--ifm-color-emphasis-200)', borderRadius: 8, padding: 16, flex: '1 1 280px', minWidth: 220}}>
-      <h3 style={{marginTop: 0, textTransform: 'capitalize'}}>{platform}</h3>
-      <p style={{marginTop: 4, marginBottom: 12}}>حزمة مُختارة لنظام {platform}.</p>
+    <div className={styles.linuxPicker}>
+      <label htmlFor={selectId}>{label}</label>
+      <select id={selectId} value={selectedIndex} onChange={(e) => setSelectedIndex(Number(e.target.value))}>
+        {options.map((opt, index) => (
+          <option key={opt.name} value={index}>{`${opt.type} • ${archLabel(opt.arch)}`}</option>
+        ))}
+      </select>
 
-      <div style={{display: 'flex', flexDirection: 'column', gap: 8}}>
-        {primary ? (
-          <a className="button button--primary" href={primary.browser_download_url} target="_blank" rel="noopener noreferrer" style={{display: 'block', width: '100%', textAlign: 'center'}}>تنزيل مُوصى به — {primary.name}</a>
-        ) : (
-          <a className="button button--primary" href="#" style={{display: 'block', width: '100%', textAlign: 'center'}}>تنزيل (غير متوفر)</a>
-        )}
-
-        <div style={{display: 'flex', gap: 8, marginTop: 8}}>
-          {lang ? <a className="button button--secondary" href={lang.browser_download_url} target="_blank" rel="noopener noreferrer" style={{flex: 1}}>اللغة فقط</a> : null}
-          {ide ? <a className="button button--secondary" href={ide.browser_download_url} target="_blank" rel="noopener noreferrer" style={{flex: 1}}>IDE فقط</a> : null}
-        </div>
-      </div>
+      <a
+        className={buttonClass}
+        href={selected?.url}
+        target="_blank"
+        rel="noopener noreferrer"
+        title={selected?.name || ''}
+      >
+        {buttonLabel}
+      </a>
     </div>
   );
 }
 
-export default function DownloadPage() {
-  const [releases] = useState(EXAMPLE_RELEASES);
-  const [selected, setSelected] = useState(releases[0]);
-  const [platform] = useState(() => detectPlatform());
-    const [versions, setVersions] = useState(null);
-
-    useEffect(() => {
-      // Try to load Docusaurus versions.json (native versioning). If present,
-      // use it to provide version choices. This is client-side only.
-      async function loadVersions() {
-        try {
-          const res = await fetch('/versions.json');
-          if (!res.ok) return;
-          const data = await res.json();
-          if (Array.isArray(data) && data.length) {
-            setVersions(data);
-            // If a version matches a release tag, select it
-            const match = data.find(v => releases.some(r => r.tag_name === v));
-            if (match) {
-              const rel = releases.find(r => r.tag_name === match);
-              if (rel) setSelected(rel);
-            }
-          }
-        } catch (e) {
-          // ignore - fallback to example data
-        }
-      }
-      loadVersions();
-    }, [releases]);
-
-  useEffect(() => {
-    // placeholder: later we could fetch real releases here and setSelected accordingly
-  }, []);
-
-  const platforms = useMemo(() => ['windows', 'mac', 'linux'], []);
+function OSCard({os, detected, plan}) {
+  const isDetected = detected === os.key;
+  const mobile = isMobileOS(os.key);
+  const description = mobile
+    ? 'نسخة خفيفة لتجربة اللغة ومراجعة الأكواد.'
+    : 'بيئة التطوير المتكاملة (IDE) وأدوات البناء.';
+  const editorLabel = mobile ? 'تحميل التطبيق' : 'تحميل المحرر';
+  const cliLabel = mobile ? 'نواة اللغة فقط' : 'نواة اللغة (CLI)';
+  const mobileUnavailable = mobile && !plan.hasEditorInstall;
 
   return (
-    <Layout title="تنزيل" description="تنزيل لغة ض وملفاتها">
-      <main style={{padding: 'var(--ifm-leading) 0'}}>
-        <div className="container">
-          <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 16}}>
-            <div>
-              <h1 style={{margin: 0}}>تنزيل ض — {selected.name}</h1>
-              <p style={{marginTop: 8}}>تاريخ الإصدار: {selected.published_at}</p>
-            </div>
+    <article className={`${styles.osCard} ${isDetected ? styles.osCardActive : ''}`}>
+      <div className={styles.osHeader}>
+        <h3>{os.label}</h3>
+        {isDetected ? <span className={styles.badge}>النظام الحالي</span> : null}
+      </div>
 
-            <div>
-              <label style={{display: 'block', marginBottom: 6}}>الإصدار </label>
-              {versions ? (
-                <div style={{display: 'flex', gap: 8, alignItems: 'center'}}>
-                  {versions.map(v => (
-                    <button key={v} className={v === selected.tag_name ? 'button button--primary' : 'button button--secondary'} onClick={() => {
-                      const rel = releases.find(r => r.tag_name === v);
-                      if (rel) setSelected(rel);
-                    }}>{v}</button>
-                  ))}
-                </div>
-              ) : (
-                <div style={{display: 'flex', gap: 8}}>
-                  {releases.map(r => (
-                    <button key={r.id} className={r.tag_name === selected.tag_name ? 'button button--primary' : 'button button--secondary'} onClick={() => setSelected(r)}>{r.tag_name}</button>
-                  ))}
-                </div>
-              )}
+      <p className={styles.cardDescription}>{description}</p>
+
+      {mobileUnavailable ? (
+        <div className={styles.cardButtons}>
+          <span className={styles.heroComingSoon}>
+            يتوفر قريباً إن شاء الله
+          </span>
+        </div>
+      ) : (
+        <div className={styles.cardButtons}>
+          {plan.hasEditorInstall ? (
+            os.key === 'linux' ? (
+              <LinuxPackagePicker
+                options={plan.editorOptions}
+                label="اختر حزمة المحرر"
+                buttonLabel={editorLabel}
+                idPrefix={`${os.key}-editor`}
+              />
+            ) : (
+              <a
+                className="button button--primary button--md"
+                href={plan.editorPrimary?.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                title={plan.editorPrimary?.name || ''}
+              >
+                {editorLabel}
+              </a>
+            )
+          ) : (
+            <span className={styles.heroComingSoon}>يتوفر قريباً إن شاء الله</span>
+          )}
+
+          {plan.hasCli ? (
+            os.key === 'linux' ? (
+              <LinuxPackagePicker
+                options={plan.cliOptions}
+                label="اختر حزمة اللغة"
+                buttonLabel={cliLabel}
+                idPrefix={`${os.key}-cli`}
+                buttonVariant="secondary"
+              />
+            ) : (
+              <a
+                className="button button--secondary button--md"
+                href={plan.cliPrimary.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                title={plan.cliPrimary.name}
+              >
+                {cliLabel}
+              </a>
+            )
+          ) : (
+            <span className={styles.cliUnavailable}>{`${cliLabel} تتوفر قريباً`}</span>
+          )}
+        </div>
+      )}
+    </article>
+  );
+}
+
+export default function DownloadPage() {
+  const [client, setClient] = useState({os: 'unknown', arch: 'unknown'});
+  const [releases, setReleases] = useState({
+    loading: true,
+    error: null,
+    editor: null,
+    language: null,
+  });
+
+  useEffect(() => {
+    setClient(detectClient());
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function load() {
+      try {
+        const [editor, language] = await Promise.all([
+          fetchLatestRelease(GITHUB_API.editor),
+          fetchLatestRelease(GITHUB_API.language),
+        ]);
+
+        if (cancelled) return;
+        setReleases({loading: false, error: null, editor, language});
+      } catch {
+        if (cancelled) return;
+        setReleases({loading: false, error: 'تعذر جلب أحدث الإصدارات الآن.', editor: null, language: null});
+      }
+    }
+
+    load();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const detectedPlan = useMemo(() => buildPlan(client.os, client.arch, releases), [client.os, client.arch, releases]);
+  const versionLabel = detectedPlan.version || 'v-';
+
+  return (
+    <Layout title="تنزيل ض" description="بوابة التحميل الرسمية لبيئة تطوير لغة ض">
+      <main className={styles.page}>
+        <section className={styles.heroSection}>
+          <div className="container">
+            <div className={styles.heroCard}>
+              <h1>بيئة تطوير لغة "ض"</h1>
+              <p className={styles.subhead}>نسخة متوافقة مع {detectedPlan.osTechLabel}</p>
+
+              <div className={styles.heroButtonRow}>
+                {detectedPlan.hasEditorInstall ? (
+                  <a
+                    className="button button--primary button--lg"
+                    href={detectedPlan.editorPrimary?.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    title={detectedPlan.editorPrimary?.name || ''}
+                  >
+                    {`تحميل الحزمة (${versionLabel})`}
+                  </a>
+                ) : (
+                  <span className={styles.heroComingSoon}>يتوفر قريباً إن شاء الله</span>
+                )}
+
+                {detectedPlan.cliPrimary ? (
+                  <a
+                    className="button button--secondary button--lg"
+                    href={detectedPlan.cliPrimary.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    title={detectedPlan.cliPrimary.name}
+                  >
+                    نواة اللغة (CLI)
+                  </a>
+                ) : null}
+              </div>
+
+              {detectedPlan.hasEditorInstall && detectedPlan.packageMeta ? (
+                <p className={styles.packageMeta}>{detectedPlan.packageMeta}</p>
+              ) : null}
+
+              {detectedPlan.loading ? <p className={styles.releaseMeta}>جارِ التحقق من آخر الإصدارات...</p> : null}
+              {detectedPlan.error ? <p className={styles.releaseError}>{detectedPlan.error}</p> : null}
+              {!detectedPlan.loading && !detectedPlan.error ? (
+                <p className={styles.releaseMeta}>
+                  آخر إصدار للمحرر: {detectedPlan.editorTag || '-'} | آخر إصدار للغة: {detectedPlan.languageTag || '-'}
+                </p>
+              ) : null}
             </div>
           </div>
+        </section>
 
-          <section style={{marginTop: 24}}>
-            <h2>اختر نظام التشغيل</h2>
-            <div style={{display: 'flex', gap: 16, marginTop: 12, flexWrap: 'wrap'}}>
-              {platforms.map((p) => (
-                <PlatformCard key={p} platform={p} release={selected} recommended={p === platform} />
-              ))}
-            </div>
-          </section>
+        <section className={styles.stepsSection}>
+          <div className="container">
+            <h2 className={styles.sectionTitle}>إعداد بيئة العمل</h2>
 
-          <section style={{marginTop: 28}}>
-            <h2>جميع الإصدارات (مثال)</h2>
-            <p>قائمة إصدارات من المثال. لاحقاً يمكن سحب هذه القائمة مباشرة من GitHub Releases عبر API.</p>
-            <div style={{display: 'flex', flexDirection: 'column', gap: 12}}>
-              {releases.map((r) => (
-                <div key={r.id} style={{padding: 12, border: '1px solid var(--ifm-color-emphasis-200)', borderRadius: 8}}>
-                  <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-                    <div>
-                      <strong>{r.name}</strong>
-                      <div style={{fontSize: 12, color: 'var(--ifm-color-emphasis-500)'}}>تاريخ النشر: {r.published_at}</div>
-                    </div>
-                    <div style={{display: 'flex', gap: 8}}>
-                      {r.assets.map((a) => (
-                        <a key={a.name} className="button button--secondary" href={a.browser_download_url} target="_blank" rel="noopener noreferrer">تنزيل {a.name}</a>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              ))}
+            <div className={styles.stepsGrid}>
+              <article className={styles.stepCard}>
+                <span className={styles.stepNum}>1</span>
+                <h3>التحقق التلقائي</h3>
+                <p>تم تحديد النسخة الأنسب لنظام تشغيلك آلياً.</p>
+              </article>
+
+              <article className={styles.stepCard}>
+                <span className={styles.stepNum}>2</span>
+                <h3>الحصول على الحزمة</h3>
+                <p>حمّل ملف التثبيت المتكامل (المحرر + اللغة).</p>
+              </article>
+
+              <article className={styles.stepCard}>
+                <span className={styles.stepNum}>3</span>
+                <h3>التثبيت والانطلاق</h3>
+                <p>شغّل الملف وابدأ رحلتك البرمجية فوراً.</p>
+              </article>
             </div>
-          </section>
-        </div>
+
+            <div className={styles.supportLinks}>
+              <Link to="/docs/home">التوثيق والدروس</Link>
+              <a href={RELEASE_LINKS.editorAll} target="_blank" rel="noopener noreferrer">أرشيف المحرر</a>
+              <a href={RELEASE_LINKS.languageAll} target="_blank" rel="noopener noreferrer">أرشيف اللغة</a>
+            </div>
+          </div>
+        </section>
+
+        <section className={styles.platformSection}>
+          <div className="container">
+            <h2 className={styles.sectionTitle}>التحميل اليدوي للمنصات</h2>
+
+            <div className={styles.platformGroup}>
+              <h3 className={styles.groupTitle}>منصات سطح المكتب</h3>
+              <div className={styles.osGrid}>
+                {prioritizeDetectedOS(
+                  OS_LIST.filter((os) => DESKTOP_OS_KEYS.has(os.key)),
+                  client.os,
+                ).map((os) => {
+                  const plan = buildPlan(os.key, client.arch, releases);
+                  return <OSCard key={os.key} os={os} detected={client.os} plan={plan} />;
+                })}
+              </div>
+            </div>
+
+            <div className={styles.platformGroup}>
+              <h3 className={styles.groupTitle}>منصات الهاتف</h3>
+              <div className={styles.osGrid}>
+                {prioritizeDetectedOS(
+                  OS_LIST.filter((os) => MOBILE_OS_KEYS.has(os.key)),
+                  client.os,
+                ).map((os) => {
+                  const plan = buildPlan(os.key, client.arch, releases);
+                  return <OSCard key={os.key} os={os} detected={client.os} plan={plan} />;
+                })}
+              </div>
+            </div>
+          </div>
+        </section>
       </main>
     </Layout>
   );
 }
-
-
-// -----------------------------
-// Releases list (example data)
-// -----------------------------
-
-function ReleasesList() {
-  // Example data — replace with a real fetch to the GitHub Releases API later.
-  const exampleReleases = [
-    {
-      id: 1,
-      tag_name: 'v0.2.0',
-      name: 'إصدار 0.2.0',
-      published_at: '2026-01-15',
-      assets: [
-        { name: 'daad-0.2.0-windows-installer.exe', browser_download_url: 'https://example.com/downloads/daad-0.2.0-windows-installer.exe' },
-        { name: 'daad-0.2.0-mac.dmg', browser_download_url: 'https://example.com/downloads/daad-0.2.0-mac.dmg' },
-        { name: 'daad-0.2.0-linux.AppImage', browser_download_url: 'https://example.com/downloads/daad-0.2.0-linux.AppImage' },
-      ],
-    },
-    {
-      id: 2,
-      tag_name: 'v0.1.0',
-      name: 'الإصدار التجريبي 0.1.0',
-      published_at: '2025-12-01',
-      assets: [
-        { name: 'daad-0.1.0.zip', browser_download_url: 'https://example.com/downloads/daad-0.1.0.zip' },
-      ],
-    },
-  ];
-
-  // Clicking an asset should start download — we'll navigate the browser to the asset URL.
-  function download(url) {
-    // create an <a> and click it so the browser treats it as a download/navigation.
-    const a = document.createElement('a');
-    a.href = url;
-    a.rel = 'noopener noreferrer';
-    // If same-origin and served with Content-Disposition attachment the download will start.
-    a.click();
-  }
-
-  return (
-    <section style={{marginTop: 28}}>
-      <h2>الإصدارات</h2>
-      <p>قائمة إصدارات من المثال. لاحقاً يمكن سحب هذه القائمة مباشرة من GitHub Releases عبر API.</p>
-
-      <div style={{display: 'flex', flexDirection: 'column', gap: 12}}>
-        {exampleReleases.map((r) => (
-          <div key={r.id} style={{padding: 12, border: '1px solid var(--ifm-color-emphasis-200)', borderRadius: 8}}>
-            <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-              <div>
-                <strong>{r.name}</strong>
-                <div style={{fontSize: 12, color: 'var(--ifm-color-emphasis-500)'}}>تاريخ النشر: {r.published_at}</div>
-              </div>
-              <div style={{display: 'flex', gap: 8}}>
-                {r.assets.map((a) => (
-                  <button key={a.name} className="button button--secondary" onClick={() => download(a.browser_download_url)}>
-                    تنزيل {a.name}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-    </section>
-  );
-}
-

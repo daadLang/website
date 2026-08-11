@@ -4,6 +4,38 @@
  * work well for content-centric websites.
  */
 
+@font-face {
+  font-family: 'DG Heaven';
+  src: url('../../static/font/DG-Heaven-Thin.ttf') format('truetype');
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'DG Heaven';
+  src: url('../../static/font/DG-Heaven-Thin.ttf') format('truetype');
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'TheYearofTheCamel';
+  src: url('../../static/font/TheYearofTheCamel-Regular.otf') format('opentype');
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'TheYearofTheCamel';
+  src: url('../../static/font/TheYearofTheCamel-Regular.otf') format('opentype');
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+}
+
 /* You can override the default Infima variables here. */
 :root {
   --ifm-color-primary: #2e8555;
@@ -15,6 +47,9 @@
   --ifm-color-primary-lightest: #3cad6e;
   --ifm-code-font-size: 95%;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+  --ifm-font-family-base: 'TheYearofTheCamel', 'Segoe UI', Tahoma, sans-serif;
+  --ifm-heading-font-family: 'DG Heaven', 'Segoe UI', Tahoma, sans-serif;
+  --ifm-font-family-monospace: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', monospace;
 }
 
 /* For readability concerns, you should choose a lighter palette in dark mode. */
@@ -33,6 +68,30 @@
 html, body {
   direction: rtl !important; 
   text-align: right;
+  font-family: 'TheYearofTheCamel', 'Segoe UI', Tahoma, sans-serif;
+}
+
+body,
+button,
+input,
+textarea,
+select,
+p,
+a,
+li,
+label,
+span,
+div {
+  font-family: 'TheYearofTheCamel', 'Segoe UI', Tahoma, sans-serif;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: 'DG Heaven', 'Segoe UI', Tahoma, sans-serif;
 }
 
 /* Ensure code blocks preserve direction where needed */
